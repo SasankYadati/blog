@@ -3,7 +3,7 @@ import functools
 import os
 import re
 import urllib
-
+from random import randint
 from flask import (Flask, flash, Markup, redirect, render_template, request,
                    Response, session, url_for)
 from markdown import markdown
@@ -31,7 +31,7 @@ DEBUG = False
 
 # The secret key is used internally by Flask to encrypt session data stored
 # in cookies. Make this unique for your app.
-# SECRET_KEY = 'shhh, secret!'
+SECRET_KEY = 'shhh, secret!'*randint(1,10000)+'shhhhh'*randint(1,10000)
 
 # This is used by micawber, which will attempt to generate rich media
 # embedded objects with maxwidth=800.
