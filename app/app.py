@@ -14,6 +14,7 @@ from micawber.cache import Cache as OEmbedCache
 from peewee import *
 from playhouse.flask_utils import FlaskDB, get_object_or_404, object_list
 from playhouse.sqlite_ext import *
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # Blog configuration values.
@@ -21,7 +22,7 @@ from playhouse.sqlite_ext import *
 # You may consider using a one-way hash to generate the password, and then
 # use the hash again in the login view to perform the comparison. This is just
 # for simplicity.
-ADMIN_PASSWORD = 'secret'
+ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:50000$CFmAKUXp$eac6469fc6f07647f2b8b393a93f8f9183145d7113c44576c6ca253ef5e31b24'
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # The playhouse.flask_utils.FlaskDB object accepts database URL configuration.
@@ -30,7 +31,7 @@ DEBUG = False
 
 # The secret key is used internally by Flask to encrypt session data stored
 # in cookies. Make this unique for your app.
-SECRET_KEY = 'shhh, secret!'
+# SECRET_KEY = 'shhh, secret!'
 
 # This is used by micawber, which will attempt to generate rich media
 # embedded objects with maxwidth=800.
@@ -157,9 +158,9 @@ def login():
     next_url = request.args.get('next') or request.form.get('next')
     if request.method == 'POST' and request.form.get('password'):
         password = request.form.get('password')
-        # TODO: If using a one-way hash, you would also hash the user-submitted
+        # TODO : If using a one-way hash, you would also hash the user-submitted
         # password and do the comparison on the hashed versions.
-        if password == app.config['ADMIN_PASSWORD']:
+        if check_password_hash(app.config['ADMIN_PASSWORD_HASH'],password):
             session['logged_in'] = True
             session.permanent = True  # Use cookie to store session.
             flash('You are now logged in.', 'success')
